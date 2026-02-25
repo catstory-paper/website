@@ -1,0 +1,780 @@
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CatStory: Long-Form Ophthalmic Surgical Video Synthesis with Test-Time Training</title>
+    <meta name="description"
+        content="CatStory generates up to one-minute cataract surgery videos using test-time training layers in a video diffusion transformer.">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="robots" content="all">
+    <meta content="en_EN" property="og:locale">
+    <meta content="website" property="og:type">
+    <meta content="CatStory" property="og:title">
+    <meta content="Long-Form Ophthalmic Surgical Video Synthesis with Test-Time Training" property="og:description">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:description"
+        content="CatStory: Long-Form Ophthalmic Surgical Video Synthesis with Test-Time Training">
+
+    <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/main_free.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="clarity/clarity.css" />
+    <link rel="stylesheet" type="text/css" media="all" href="assets/stylesheets/dark.css" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/monokai-sublime.min.css"> -->
+    <link href="assets/fontawesome-free-6.6.0-web/css/all.min.css" rel="stylesheet">
+    <!-- <script src="assets/scripts/navbar.js"></script> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/foundation.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                processEscapes: true
+            }
+        });
+    </script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_SVG">
+        </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <!-- Title Page -->
+    <div class="container blog" id="first-content" style="background-color: #E0E4E6;">
+        <div class="blog-title no-cover">
+            <div class="blog-intro">
+                <div>
+                    <h1 class="title">CatStory: Long-Form Ophthalmic Surgical Video Synthesis with Test-Time Training
+                    </h1>
+                    <p class="author">
+                        Anonymous Authors
+                    </p>
+                    <p class="abstract">
+                        Existing surgical video generation methods produce clips of at most 5–8 seconds, too short to
+                        capture the long-range temporal structure that downstream tasks such as phase recognition and
+                        workflow modeling require. We present CatStory, a text-conditioned framework that generates up
+                        to one-minute cataract surgery videos by integrating test-time training (TTT) layers into a
+                        pretrained video diffusion transformer. TTT layers maintain a neural-network hidden state that
+                        is updated via self-supervised gradient steps at each token, enabling efficient long-range
+                        context propagation across surgical phases. We curate 6,845 densely captioned surgical segments
+                        from Cataract-101 using a six-component storyboard schema encoding instrument identity, action
+                        sequences, tissue response, and procedural intent. To validate the utility of our synthetic
+                        data, we show that augmenting limited real annotations with 1,000 CatStory-generated samples
+                        improves frozen-backbone surgical step classification by up to 8.4 percentage points using
+                        JHU-VPT(JEPA), reducing reliance on costly manual labels. We further evaluate generation quality
+                        through quantitative metrics and expert surgeon assessment.
+                    </p>
+                    <div class="info">
+                        <div>
+                            <a href="#" class="button icon"
+                                style="background-color: rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.1); color: #353535; transition: background-color 0.2s;">
+                                Paper (Coming Soon) <i class="fa-solid fa-book-open"></i></a> &nbsp;&nbsp;
+                            <a href="#" class="button icon"
+                                style="background-color: rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.1); color: #353535; transition: background-color 0.2s;">Code
+                                (Coming Soon) <i class="fa-solid fa-code"></i></a> &nbsp;&nbsp;
+                        </div>
+                    </div>
+                </div>
+                <div class="info">
+                    <p style="color: #d90429; font-weight: 500;">Submitted to MICCAI 2026</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Overview -->
+    <div class="container blog main first" id="blog-main">
+        <h1>Overview</h1>
+        <p class="text">
+            Surgical skill directly impacts patient outcomes, yet the majority of a surgeon's career procedures are
+            performed without expert supervision. In cataract surgery, each additional year of independent practice
+            significantly reduces the odds of high-risk complications&mdash;confirming that learning extends well beyond
+            formal training. Automated surgical video analysis can help bridge this gap through phase recognition,
+            instrument tracking, and complication detection, but public cataract datasets remain small, imbalanced, and
+            lack representation of rare events.
+        </p>
+        <p class="text">
+            Synthetic video generation offers a path forward: expanding long-tailed distributions, diversifying visual
+            conditions, and oversampling rare events without exposing patient data. However, existing diffusion-based
+            surgical video methods are limited to short clips of 5&ndash;8 seconds&mdash;far too brief for downstream
+            tasks like phase recognition and workflow modeling that require coherent understanding across the full
+            procedure.
+        </p>
+        <p class="text">
+            CatStory addresses this temporal limitation by integrating <b>test-time training (TTT) layers</b> into a
+            pretrained video diffusion transformer. TTT layers maintain a learned hidden state updated through
+            self-supervised gradient steps at each token, enabling efficient long-range context propagation across
+            surgical phases. The result is the first model capable of generating synthetic cataract surgical videos of
+            up to <b>one minute</b> in duration.
+        </p>
+    </div>
+
+
+    <!-- Key Results Highlight -->
+    <!-- <div class="container blog large gray">
+        <div class="result-cards">
+            <div class="result-card">
+                <span class="metric-value">65%</span>
+                <span class="metric-label">FID Reduction</span>
+                <span class="metric-detail">vs. Ophora baseline</span>
+            </div>
+            <div class="result-card">
+                <span class="metric-value">+8.4pp</span>
+                <span class="metric-label">Classification Gain</span>
+                <span class="metric-detail">with synthetic augmentation at 25% labels</span>
+            </div>
+            <div class="result-card">
+                <span class="metric-value">60s</span>
+                <span class="metric-label">Max Duration</span>
+                <span class="metric-detail">first model to reach 1-minute surgical video</span>
+            </div>
+        </div>
+    </div> -->
+
+
+    <!-- Contributions -->
+    <div class="container blog main">
+        <div
+            style="background-color: #fafafa; padding: 40px; border-radius: 12px; border: 1px solid #eaeaea; margin-bottom: 30px;">
+            <h1 style="margin-top: 0; padding-top: 0;">Key Contributions</h1>
+            <ul style="padding-left: 20px;">
+                <li class="text" style="margin-bottom: 12px; list-style-type: disc;">
+                    We propose a principled pipeline for generating temporally grounded, semantically rich captions of
+                    cataract surgery videos following a storyboard annotation protocol adapted from previous works. Each
+                    caption is
+                    constructed according to an expert-guided six-component schema that yields <b>6,845 richly annotated
+                        surgical segments</b> from the Cataract101 dataset, constituting a novel and publicly
+                    reproducible
+                    resource for vision-language training and evaluation in the ophthalmic surgical domain.
+                </li>
+                <li class="text" style="margin-bottom: 12px; list-style-type: disc;">
+                    We integrate TTT layers into a pretrained video diffusion transformer, enabling the model's hidden
+                    state
+                    to function as an adaptive, inference-time memory that preserves long-range procedural context. To
+                    the
+                    best of our knowledge, this is the first model that can <b>generate synthetic cataract surgical
+                        videos
+                        of up to one minute</b>.
+                </li>
+                <li class="text" style="list-style-type: disc;">
+                    We show that <b>synthetic videos from CatStory reduce the need for annotated real data</b> in
+                    downstream
+                    surgical step classification. Using a frozen JHU-VPT(JEPA) backbone with attentive probing,
+                    augmenting limited annotated real data with 1,000 synthetic samples consistently improves
+                    classification
+                    accuracy on Cataract-1K, narrowing the gap to the fully supervised baseline. This provides direct
+                    evidence that our generated videos encode procedurally meaningful structure sufficient to supplement
+                    scarce real annotations.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <!-- Architecture Figure -->
+    <div class="container blog extra-large gray">
+        <div class="arch-figure">
+            <img src="assets/figures/I3.png"
+                alt="CatStory architecture: Modified Diffusion Transformer block with TTT layers">
+        </div>
+        <p class="caption">
+            <b>Architecture Overview.</b> Our modified Diffusion Transformer block integrates TTT layers after each
+            self-attention module. Self-attention handles fine-grained intra-segment dynamics within 3-second windows,
+            while TTT layers propagate long-range procedural context across the full video sequence. On the right, the
+            TTT hidden state learns temporal dynamics at long horizons.
+        </p>
+    </div>
+
+
+    <!-- Curriculum Training -->
+    <div class="container blog main">
+        <h2>Curriculum Fine-Tuning</h2>
+        <p class="text">
+            Training follows a five-stage curriculum that progressively extends generation length from 3 seconds to over
+            one minute. Stages 1 and 3 perform full supervised fine-tuning at 3s and 18s, adapting both the pretrained
+            DiT and new TTT projections to the surgical domain. Stages 2, 4, and 5 freeze the DiT backbone and train
+            only TTT parameters, extending to 9s, 30s, and 36s. This alternation prevents catastrophic forgetting of the
+            pretrained prior while allowing TTT layers to specialize in long-range surgical dependencies. At each stage
+            boundary, all weights are warm-started from the previous stage.
+        </p>
+    </div>
+
+    <!-- Algorithm Block Container -->
+    <div class="container blog extra-large">
+        <div class="algorithm-container"
+            style="margin-top: 10px; margin-bottom: 30px; overflow-x: auto; font-family: 'Charter', 'Georgia', serif;">
+            <p
+                style="font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px; font-size: 1.05em; color: #353535;">
+                Algorithm: Curriculum Fine-Tuning of DiT with TTT Layers</p>
+            <div
+                style="font-family: monospace; font-size: 0.95em; white-space: pre-wrap; line-height: 1.7; color: #353535;">
+<b>Require:</b> Pre-trained CogVideoX-5B weights $\boldsymbol{\theta}_{\text{base}}$; surgical video
+dataset $\mathcal{D} = \{(v_i, c_i)\}_{i=1}^{N}$ with precomputed latents $(\boldsymbol{z}^v_i,
+\boldsymbol{z}^c_i)$; stage schedule $\mathcal{S} = \{(L_k, T_k, \Omega_k)\}_{k=1}^{5}$
+<b>Ensure:</b> Model $\boldsymbol{\theta}^{\star}$ generating coherent surgical videos up to 36s
+
+$\boldsymbol{\theta}^{(1)} \leftarrow \boldsymbol{\theta}_{\text{base}} \cup
+\bigl\{\mathbf{Q}_\ell,\mathbf{K}_\ell,\mathbf{V}_\ell,\mathbf{O}_\ell,\boldsymbol{\alpha}_\ell,\boldsymbol{\beta}_\ell
+\bigr\}_{\ell=1}^{M}$ <span style="color: #6a737d; font-style: italic; font-size: 0.9em;">// augment
+    backbone with TTT projections and gates</span>
+
+<b>for</b> stage $k = 1, \ldots, 5$ <b>do</b>
+<b>if</b> $k \in \{1, 3\}$ <b>then</b>
+$\Omega_k \leftarrow \boldsymbol{\theta}^{(k)}$ <span
+    style="color: #6a737d; font-style: italic; font-size: 0.9em;">// full SFT (3s: $T_k{=}4500$; 18s:
+    $T_k{=}4500$)</span>
+<b>else</b>
+$\Omega_k \leftarrow
+\bigl\{\mathbf{Q}_\ell,\mathbf{K}_\ell,\mathbf{V}_\ell,\mathbf{O}_\ell,\boldsymbol{\alpha}_\ell,\boldsymbol{\beta}_\ell
+\bigr\}_{\ell=1}^{M}$ <span style="color: #6a737d; font-style: italic; font-size: 0.9em;">// TTT params
+    only (9s: $T_k{=}5000$; 30s: $T_k{=}1000$; 36s: $T_k{=}1000$)</span>
+<b>end if</b>
+
+$\mathcal{D}_k \leftarrow \{(\boldsymbol{z}^v_i, \boldsymbol{z}^c_i) \in \mathcal{D} \mid
+\mathrm{dur}(v_i) \geq L_k\}$
+
+<b>for</b> epoch $t = 1, \ldots, T_k$ <b>do</b>
+<b>for</b> each mini-batch $\mathcal{B} \subseteq \mathcal{D}_k$ <b>do</b>
+Sample $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0},\mathbf{I})$, $t_d \sim \mathrm{Uniform}(1,
+T_{\mathrm{diff}})$
+$\boldsymbol{z}^v_{\mathrm{noisy}} \leftarrow \sqrt{\bar\alpha_{t_d}}\,\boldsymbol{z}^v +
+\sqrt{1{-}\bar\alpha_{t_d}}\,\boldsymbol{\epsilon}$
+$\mathcal{L} = \bigl\|\boldsymbol{\epsilon} -
+\boldsymbol{\epsilon}_{\boldsymbol{\theta}}(\boldsymbol{z}^v_{\mathrm{noisy}},\, t_d,\,
+\boldsymbol{z}^c)\bigr\|_2^2$
+Update $\Omega_k$ via $\nabla_{\Omega_k}\mathcal{L}$
+<b>end for</b>
+<b>end for</b>
+
+$\boldsymbol{\theta}^{(k+1)} \leftarrow \boldsymbol{\theta}^{(k)}$ <span
+    style="color: #6a737d; font-style: italic; font-size: 0.9em;">// warm-start next stage</span>
+<b>end for</b>
+
+<b>return</b> $\boldsymbol{\theta}^{\star} \leftarrow \boldsymbol{\theta}^{(5)}$
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Video Generation Showcase — Duration Timeline -->
+    <div class="container blog max gray dark-theme">
+        <div class="inner-padded">
+            <div class="timeline-header" style="margin-bottom: 5vh;">
+                <h1 style="padding-bottom: 2vh; color: white !important;">Generated Video Samples</h1>
+                <p
+                    style="color: rgba(255, 255, 255, 0.85) !important; font-size: inherit; line-height: 1.8; max-width: 800px; margin: 0 auto;">
+                    CatStory generates coherent surgical videos from 3 seconds to over 1 minute. Each sample below is
+                    produced by a single forward pass through the corresponding curriculum stage.</p>
+            </div>
+        </div>
+
+        <div class="duration-timeline">
+            <div class="timeline-line"></div>
+
+            <!-- 3s -->
+            <div class="timeline-node">
+                <div class="timeline-video-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/3s_1.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-player-controls">
+                        <button class="vpc-btn vpc-play"><i class="fa-solid fa-pause"></i></button>
+                        <button class="vpc-btn vpc-slow" title="Slow down"><i class="fa-solid fa-backward"></i></button>
+                        <button class="vpc-btn vpc-fast" title="Speed up"><i class="fa-solid fa-forward"></i></button>
+                        <button class="vpc-btn vpc-restart" title="Restart"><i
+                                class="fa-solid fa-rotate-left"></i></button>
+                        <input type="range" class="vpc-scrub" min="0" max="100" value="0" step="0.1">
+                        <span class="vpc-elapsed">00:00</span>
+                        <span class="vpc-speed">1.00x</span>
+                    </div>
+                    <div class="timeline-video-info">
+                        <span class="duration-tag">3 seconds</span>
+                        <p>Stage 1 &mdash; Full SFT. Fine-grained instrument-tissue dynamics within a single procedural
+                            phase.</p>
+                    </div>
+                </div>
+                <div class="timeline-dot">
+                    <div class="dot-circle"></div>
+                    <div class="timeline-label">3s</div>
+                </div>
+                <div class="timeline-spacer"></div>
+            </div>
+
+            <!-- 9s -->
+            <div class="timeline-node">
+                <div class="timeline-spacer"></div>
+                <div class="timeline-dot">
+                    <div class="dot-circle"></div>
+                    <div class="timeline-label">9s</div>
+                </div>
+                <div class="timeline-video-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/9s_p43.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-player-controls">
+                        <button class="vpc-btn vpc-play"><i class="fa-solid fa-pause"></i></button>
+                        <button class="vpc-btn vpc-slow" title="Slow down"><i class="fa-solid fa-backward"></i></button>
+                        <button class="vpc-btn vpc-fast" title="Speed up"><i class="fa-solid fa-forward"></i></button>
+                        <button class="vpc-btn vpc-restart" title="Restart"><i
+                                class="fa-solid fa-rotate-left"></i></button>
+                        <input type="range" class="vpc-scrub" min="0" max="100" value="0" step="0.1">
+                        <span class="vpc-elapsed">00:00</span>
+                        <span class="vpc-speed">1.00x</span>
+                    </div>
+                    <div class="timeline-video-info">
+                        <span class="duration-tag">9 seconds</span>
+                        <p>Stage 2 &mdash; TTT-only tuning. Cross-segment context begins propagating instrument state
+                            across boundaries.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 18s -->
+            <div class="timeline-node">
+                <div class="timeline-video-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/18s_finalcatsurg_28.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-player-controls">
+                        <button class="vpc-btn vpc-play"><i class="fa-solid fa-pause"></i></button>
+                        <button class="vpc-btn vpc-slow" title="Slow down"><i class="fa-solid fa-backward"></i></button>
+                        <button class="vpc-btn vpc-fast" title="Speed up"><i class="fa-solid fa-forward"></i></button>
+                        <button class="vpc-btn vpc-restart" title="Restart"><i
+                                class="fa-solid fa-rotate-left"></i></button>
+                        <input type="range" class="vpc-scrub" min="0" max="100" value="0" step="0.1">
+                        <span class="vpc-elapsed">00:00</span>
+                        <span class="vpc-speed">1.00x</span>
+                    </div>
+                    <div class="timeline-video-info">
+                        <span class="duration-tag">18 seconds</span>
+                        <p>Stage 3 &mdash; Full SFT. Best FVD (25.69) and OphCLIP (34.69) among all stages. Multiple
+                            phase transitions captured.</p>
+                    </div>
+                </div>
+                <div class="timeline-dot">
+                    <div class="dot-circle"></div>
+                    <div class="timeline-label">18s</div>
+                </div>
+                <div class="timeline-spacer"></div>
+            </div>
+
+            <!-- 30s -->
+            <div class="timeline-node">
+                <div class="timeline-spacer"></div>
+                <div class="timeline-dot">
+                    <div class="dot-circle"></div>
+                    <div class="timeline-label">30s</div>
+                </div>
+                <div class="timeline-video-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/30s_p5.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-player-controls">
+                        <button class="vpc-btn vpc-play"><i class="fa-solid fa-pause"></i></button>
+                        <button class="vpc-btn vpc-slow" title="Slow down"><i class="fa-solid fa-backward"></i></button>
+                        <button class="vpc-btn vpc-fast" title="Speed up"><i class="fa-solid fa-forward"></i></button>
+                        <button class="vpc-btn vpc-restart" title="Restart"><i
+                                class="fa-solid fa-rotate-left"></i></button>
+                        <input type="range" class="vpc-scrub" min="0" max="100" value="0" step="0.1">
+                        <span class="vpc-elapsed">00:00</span>
+                        <span class="vpc-speed">1.00x</span>
+                    </div>
+                    <div class="timeline-video-info">
+                        <span class="duration-tag">30 seconds</span>
+                        <p>Stage 4 &mdash; TTT-only tuning. Sustained coherence over half a minute with stable temporal
+                            smoothness. Click any phase segment to jump to that point.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 63s -->
+            <div class="timeline-node">
+                <div class="timeline-video-card">
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/63s_p1.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-player-controls">
+                        <button class="vpc-btn vpc-play"><i class="fa-solid fa-pause"></i></button>
+                        <button class="vpc-btn vpc-slow" title="Slow down"><i class="fa-solid fa-backward"></i></button>
+                        <button class="vpc-btn vpc-fast" title="Speed up"><i class="fa-solid fa-forward"></i></button>
+                        <button class="vpc-btn vpc-restart" title="Restart"><i
+                                class="fa-solid fa-rotate-left"></i></button>
+                        <input type="range" class="vpc-scrub" min="0" max="100" value="0" step="0.1">
+                        <span class="vpc-elapsed">00:00</span>
+                        <span class="vpc-speed">1.00x</span>
+                    </div>
+                    <p class="phase-bar-label">Surgical Phases</p>
+                    <div class="phase-bar">
+                        <div class="phase-indicator"></div>
+                        <div class="phase-segment phase-incision" data-start="0" style="width: 4.76%;" title="Incision">
+                            <span>Incis.</span>
+                        </div>
+                        <div class="phase-segment phase-viscoel" data-start="4.76" style="width: 9.52%;"
+                            title="Viscoelastic Injection"><span>Visc.</span></div>
+                        <div class="phase-segment phase-rhexis" data-start="14.28" style="width: 9.52%;"
+                            title="Capsulorhexis"><span>Rhexis</span></div>
+                        <div class="phase-segment phase-hydrodiss" data-start="23.8" style="width: 4.76%;"
+                            title="Hydrodissection"><span>Hydro</span></div>
+                        <div class="phase-segment phase-phaco" data-start="28.56" style="width: 19.05%;"
+                            title="Phacoemulsification"><span>Phaco</span></div>
+                        <div class="phase-segment phase-irrigation" data-start="47.61" style="width: 23.81%;"
+                            title="Irrigation/Aspiration"><span>I/A</span></div>
+                        <div class="phase-segment phase-capsule" data-start="71.42" style="width: 9.52%;"
+                            title="Capsule Polishing"><span>Cap.</span></div>
+                        <div class="phase-segment phase-iol" data-start="80.94" style="width: 4.76%;"
+                            title="IOL Setting-up"><span>IOL</span></div>
+                        <div class="phase-segment phase-viscoel" data-start="85.7" style="width: 9.52%;"
+                            title="Viscous Agent Removal"><span>V. Rem.</span></div>
+                        <div class="phase-segment phase-tonifying" data-start="95.22" style="width: 4.78%;"
+                            title="Tonifying/Antibiotics"><span>Toni.</span></div>
+                    </div>
+                    <div class="timeline-video-info">
+                        <span class="duration-tag">63 seconds</span>
+                        <p>Stage 5 &mdash; Full one-minute generation covering the complete cataract procedure. Click
+                            any phase segment to jump directly to that surgical step.</p>
+                    </div>
+                </div>
+                <div class="timeline-dot">
+                    <div class="dot-circle"></div>
+                    <div class="timeline-label">63s</div>
+                </div>
+                <div class="timeline-spacer"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Quantitative Results -->
+    <div class="container blog main">
+        <h1>Results</h1>
+        <h2>Generation Quality</h2>
+        <p class="text">
+            We benchmark CatStory against Ophora, the current state-of-the-art in text-guided ophthalmic surgical video
+            generation. At 3 seconds, CatStory reduces FID by 65% (167.10 &rarr; 58.03), FVD by 41% (46.28 &rarr;
+            27.22), and FVMD by 75% (6175.70 &rarr; 1553.45), with gains in temporal smoothness and OphCLIP alignment.
+            The fully fine-tuned 18s model achieves the overall best FVD and OphCLIP scores. Among projection-only
+            variants, performance degrades gradually with duration, but temporal smoothness and text alignment remain
+            stable even at one-minute durations.
+        </p>
+    </div>
+
+
+    <!-- Video Comparison: Side-by-side synchronized player -->
+    <div class="container blog extra-large dark-theme">
+        <div class="video-comparison">
+            <div class="comp-videos">
+                <div class="comp-video-a">
+                    <span class="comp-label">Ophora</span>
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/oph_p16.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="comp-video-b">
+                    <span class="comp-label">CatStory</span>
+                    <video autoplay loop muted playsinline>
+                        <source src="assets/videos/catstory_oph_p16.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            <div class="comp-controls">
+                <button class="comp-play"><i class="fa-solid fa-play"></i></button>
+                <input type="range" class="comp-seek" min="0" max="100" value="0" step="0.1">
+                <span class="comp-time">00:00 / 00:00</span>
+            </div>
+        </div>
+        <p class="caption"><b>Side-by-Side Comparison.</b> Synchronized playback of Ophora (left) and CatStory (right)
+            outputs from the same text prompt. Use the shared controls to scrub through both videos simultaneously.
+        </p>
+    </div>
+
+
+    <!-- Results Table: Baseline Comparison -->
+    <div class="container blog large">
+        <div class="table-wrapper">
+            <table>
+                <thead class="center">
+                    <tr>
+                        <th style="text-align: left;" data-tooltip="The video generation model being compared.">
+                            <b>Method</b>
+                        </th>
+                        <th
+                            data-tooltip="Fr&eacute;chet Inception Distance. Measures distribution distance between real and generated frames. Lower means more realistic individual frames.">
+                            <b>FID</b> &darr;
+                        </th>
+                        <th
+                            data-tooltip="Fr&eacute;chet Video Distance. Extends FID to the temporal domain, measuring how well generated videos match the motion statistics of real videos. Lower is better.">
+                            <b>FVD</b> &darr;
+                        </th>
+                        <th
+                            data-tooltip="Fr&eacute;chet Video Motion Distance. Specifically measures motion pattern similarity between real and generated videos. Lower indicates more natural dynamics.">
+                            <b>FVMD</b> &darr;
+                        </th>
+                        <th
+                            data-tooltip="VBench Temporal Smoothness. Measures frame-to-frame visual consistency, penalizing flicker and jitter. Higher means smoother transitions.">
+                            <b>Smooth</b> &uarr;
+                        </th>
+                        <th
+                            data-tooltip="VBench Temporal Consistency. Evaluates whether semantic content stays coherent over time. Higher means fewer hallucinated or disappearing objects.">
+                            <b>Consist</b> &uarr;
+                        </th>
+                        <th
+                            data-tooltip="OphCLIP Score (w=100). Domain-adapted CLIP alignment measuring how well the generated video matches the surgical text prompt. Higher means better text-video fidelity.">
+                            <b>CLIP</b> &uarr;
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="center">
+                    <tr>
+                        <td style="text-align: left;">Ophora</td>
+                        <td>167.10</td>
+                        <td>46.28</td>
+                        <td>6175.70</td>
+                        <td>0.977</td>
+                        <td><b>0.244</b></td>
+                        <td>30.23</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;"><b>CatStory (3s)</b></td>
+                        <td><b>58.03</b></td>
+                        <td><b>27.22</b></td>
+                        <td><b>1553.45</b></td>
+                        <td><b>0.992</b></td>
+                        <td>0.243</td>
+                        <td><b>31.60</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="caption"><b>Baseline Comparison.</b> CatStory vs. Ophora on 3-second clips at 16 fps. Bold indicates
+            the best result. FID, FVD, and FVMD are lower-is-better; Smooth, Consist, and CLIP are higher-is-better.</p>
+    </div>
+
+
+    <!-- Results Table: Duration Scaling -->
+    <div class="container blog large">
+        <div class="table-wrapper">
+            <table>
+                <thead class="center">
+                    <tr>
+                        <th style="text-align: left;"
+                            data-tooltip="CatStory model at each curriculum stage duration. Full SFT stages (3s, 18s) tune all weights; other stages tune TTT layers only.">
+                            <b>Configuration</b>
+                        </th>
+                        <th
+                            data-tooltip="Fr&eacute;chet Inception Distance. Lower is better. Measures per-frame visual realism.">
+                            <b>FID</b> &darr;
+                        </th>
+                        <th
+                            data-tooltip="Fr&eacute;chet Video Distance. Lower is better. Captures temporal motion realism.">
+                            <b>FVD</b> &darr;
+                        </th>
+                        <th
+                            data-tooltip="Fr&eacute;chet Video Motion Distance. Lower is better. Evaluates motion pattern fidelity.">
+                            <b>FVMD</b> &darr;
+                        </th>
+                        <th
+                            data-tooltip="VBench Temporal Smoothness. Higher is better. Penalizes frame-to-frame flicker.">
+                            <b>Smooth</b> &uarr;
+                        </th>
+                        <th data-tooltip="VBench Temporal Consistency. Higher is better. Semantic coherence over time.">
+                            <b>Consist</b> &uarr;
+                        </th>
+                        <th
+                            data-tooltip="OphCLIP Score. Higher is better. Text-video alignment in the ophthalmic domain.">
+                            <b>CLIP</b> &uarr;
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="center">
+                    <tr>
+                        <td style="text-align: left;">CatStory (3s)</td>
+                        <td>58.03</td>
+                        <td>27.22</td>
+                        <td>1553.45</td>
+                        <td>0.992</td>
+                        <td>0.243</td>
+                        <td>31.60</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">CatStory (9s)</td>
+                        <td>79.48</td>
+                        <td>33.44</td>
+                        <td>1044.25</td>
+                        <td>0.990</td>
+                        <td>0.252</td>
+                        <td>32.94</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">CatStory (18s)</td>
+                        <td>73.88</td>
+                        <td><b>25.69</b></td>
+                        <td><b>828.42</b></td>
+                        <td>0.991</td>
+                        <td>0.246</td>
+                        <td><b>34.69</b></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">CatStory (30s)</td>
+                        <td>90.49</td>
+                        <td>30.41</td>
+                        <td>1593.27</td>
+                        <td>0.989</td>
+                        <td>0.247</td>
+                        <td>33.71</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">CatStory (63s)</td>
+                        <td>126.71</td>
+                        <td>46.83</td>
+                        <td>2228.21</td>
+                        <td>0.990</td>
+                        <td><b>0.254</b></td>
+                        <td>34.32</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="caption"><b>Duration Scaling Analysis.</b> Generation quality across temporal lengths. The fully
+            fine-tuned 18s model achieves the best FVD and OphCLIP scores. Temporal smoothness and text alignment remain
+            stable up to 63 seconds.</p>
+    </div>
+
+
+    <!-- Downstream Evaluation -->
+    <div class="container blog main">
+        <h2>Synthetic Data Reduces Annotation Requirements</h2>
+        <p class="text">
+            To evaluate whether CatStory's synthetic videos can substitute for costly real annotations, we use the
+            pretrained JHU-VPT(JEPA) backbone for surgical step classification on Cataract-1K. The encoder is kept
+            frozen; only an attentive probe is trained. We generate 1,000 synthetic 18s videos, extract 16-frame windows
+            at 1 fps, and pair them with storyboard-derived step labels. Comparing probe training on real-only data
+            versus real-plus-synthetic data directly measures how well CatStory compensates for missing annotations.
+        </p>
+    </div>
+
+
+    <!-- Downstream Table -->
+    <div class="container blog large">
+        <div class="table-wrapper">
+            <table>
+                <thead class="center">
+                    <tr>
+                        <th style="text-align: left;"
+                            data-tooltip="Training data source for the attentive probe classifier on top of the frozen JHU-VPT(JEPA) backbone.">
+                            <b>Probe Training Data</b>
+                        </th>
+                        <th
+                            data-tooltip="All available real Cataract-1K training labels. The upper bound for annotation budget.">
+                            <b>100%</b>
+                        </th>
+                        <th
+                            data-tooltip="Only 10% of real labels available. The most data-scarce regime where synthetic augmentation helps most.">
+                            <b>10%</b>
+                        </th>
+                        <th
+                            data-tooltip="25% of real labels. Synthetic augmentation adds +8.40 percentage points here — the largest single gain.">
+                            <b>25%</b>
+                        </th>
+                        <th
+                            data-tooltip="50% of real labels. Moderate data regime where synthetic data still provides a meaningful +3.24pp boost.">
+                            <b>50%</b>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="center">
+                    <tr>
+                        <td style="text-align: left;">Real only (JHU-VPT)</td>
+                        <td>79.58</td>
+                        <td>35.12</td>
+                        <td>45.09</td>
+                        <td>58.80</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;"><b>Real + Synthetic (Ours)</b></td>
+                        <td><b>79.86</b></td>
+                        <td><b>41.05</b></td>
+                        <td><b>53.49</b></td>
+                        <td><b>62.04</b></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left; color: #6ec1e4;">&Delta;</td>
+                        <td style="color: #6ec1e4;">+0.28</td>
+                        <td style="color: #6ec1e4;">+5.93</td>
+                        <td style="color: #6ec1e4;">+8.40</td>
+                        <td style="color: #6ec1e4;">+3.24</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="caption"><b>Downstream Classification Accuracy (%).</b> Surgical step classification on Cataract-1K
+            with frozen JHU-VPT(JEPA) and attentive probing. Adding 1,000 synthetic CatStory-18s samples consistently
+            improves accuracy, with the largest gains in the low-data regime.</p>
+    </div>
+
+
+    <!-- Expert Evaluation -->
+    <div class="container blog main">
+        <h2>Expert Surgeon Evaluation</h2>
+        <p class="text">
+            Two board-certified surgeons and one postdoctoral researcher independently evaluated 25 synthetic videos
+            (150 text-video pairs) on five criteria using a 4-point Likert scale: <b>Action Fidelity</b> (consistency
+            with surgical step), <b>Visual Authenticity</b> (realism of anatomy, instruments, textures), <b>Structural
+                Consistency</b> (physical coherence without warping or flickering), <b>Tissue Behavior Plausibility</b>
+            (tissue and instrument response matching expectations), and <b>Surgical Goal Fidelity</b> (alignment with
+            intended surgical objectives).
+        </p>
+    </div>
+
+
+    <!-- Discussion -->
+    <div class="container blog main">
+        <h1>Discussion</h1>
+        <p class="text">
+            CatStory generates cataract surgery videos of up to one minute while maintaining sufficient procedural
+            fidelity to supplement real annotated data. The largest classification improvements appear in the low-data
+            regime, where annotation is most costly&mdash;confirming that generated videos encode procedurally
+            meaningful spatiotemporal structure.
+        </p>
+        <p class="text">
+            At 63 seconds, a gradual degradation in frame-level FID suggests the TTT hidden state begins to drift over
+            very long horizons. We attribute this partly to limited training epochs and the fixed dimensionality of the
+            TTT layers. Grounding the generative process with physics-informed constraints and scaling TTT capacity are
+            natural next directions toward a more faithful long-form surgical video simulator.
+        </p>
+    </div>
+
+
+    <!-- Citation -->
+    <div class="container blog main">
+        <h1>Citation</h1>
+        <pre><code class="plaintext">@inproceedings{catstory2026,
+    title={CatStory: Long-Form Ophthalmic Surgical Video
+           Synthesis with Test-Time Training},
+    author={Anonymous},
+    booktitle={MICCAI},
+    year={2026}
+}</code></pre>
+    </div>
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>
+                This website is built on the <a href="https://shikun.io/projects/clarity">Clarity Template</a>, designed
+                by <a href="https://shikun.io/">Shikun Liu</a>.
+            </p>
+        </div>
+    </footer>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="assets/scripts/interactive.js"></script>
+</body>
+
+</html>
