@@ -1,1 +1,1 @@
-Full Code coming soon! 
+Full Code and model checkpoints coming soon! 
