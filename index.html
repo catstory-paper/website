@@ -152,13 +152,11 @@
                     resource for vision-language training and evaluation in the ophthalmic surgical domain.
                 </li>
                 <li class="text" style="margin-bottom: 12px; list-style-type: disc;">
-                    We integrate TTT layers into a pretrained video diffusion transformer, enabling the model's hidden
-                    state
-                    to function as an adaptive, inference-time memory that preserves long-range procedural context. To
-                    the
-                    best of our knowledge, this is the first model that can <b>generate synthetic cataract surgical
-                        videos
-                        of up to one minute</b>.
+                    A <b>novel dual-scale generation architecture with alternating curriculum fine-tuning</b> that integrates TTT layers into a pretrained video diffusion transformer. 
+                    TTT layers use a two-layer MLP as a neural-network hidden state, updated via self-supervised gradient steps, to learn long-horizon temporal mappings across segments. 
+                    Unlike autoregressive extension that stitches segments without learning inter-segment dynamics, TTT explicitly compresses procedural history into its evolving weights. 
+                    The accompanying curriculum alternates full SFT and TTT-only stages at progressively longer durations, preventing catastrophic forgetting while specializing TTT in long-range surgical dependencies. 
+                    To the best of our knowledge, CatStory is the first model to generate synthetic cataract surgical videos of up to one minute.</b>.
                 </li>
                 <li class="text" style="list-style-type: disc;">
                     We show that <b>synthetic videos from CatStory reduce the need for annotated real data</b> in
@@ -197,7 +195,7 @@
             Training follows a five-stage curriculum that progressively extends generation length from 3 seconds to over
             one minute. Stages 1 and 3 perform full supervised fine-tuning at 3s and 18s, adapting both the pretrained
             DiT and new TTT projections to the surgical domain. Stages 2, 4, and 5 freeze the DiT backbone and train
-            only TTT parameters, extending to 9s, 30s, and 36s. This alternation prevents catastrophic forgetting of the
+            only TTT parameters, extending to 9s, 30s, and 63s. This alternation prevents catastrophic forgetting of the
             pretrained prior while allowing TTT layers to specialize in long-range surgical dependencies. At each stage
             boundary, all weights are warm-started from the previous stage.
         </p>
@@ -215,7 +213,7 @@
 <b>Require:</b> Pre-trained CogVideoX-5B weights $\boldsymbol{\theta}_{\text{base}}$; surgical video
 dataset $\mathcal{D} = \{(v_i, c_i)\}_{i=1}^{N}$ with precomputed latents $(\boldsymbol{z}^v_i,
 \boldsymbol{z}^c_i)$; stage schedule $\mathcal{S} = \{(L_k, T_k, \Omega_k)\}_{k=1}^{5}$
-<b>Ensure:</b> Model $\boldsymbol{\theta}^{\star}$ generating coherent surgical videos up to 36s
+<b>Ensure:</b> Model $\boldsymbol{\theta}^{\star}$ generating coherent surgical videos up to 63s
 
 $\boldsymbol{\theta}^{(1)} \leftarrow \boldsymbol{\theta}_{\text{base}} \cup
 \bigl\{\mathbf{Q}_\ell,\mathbf{K}_\ell,\mathbf{V}_\ell,\mathbf{O}_\ell,\boldsymbol{\alpha}_\ell,\boldsymbol{\beta}_\ell
@@ -231,7 +229,7 @@ $\Omega_k \leftarrow \boldsymbol{\theta}^{(k)}$ <span
 $\Omega_k \leftarrow
 \bigl\{\mathbf{Q}_\ell,\mathbf{K}_\ell,\mathbf{V}_\ell,\mathbf{O}_\ell,\boldsymbol{\alpha}_\ell,\boldsymbol{\beta}_\ell
 \bigr\}_{\ell=1}^{M}$ <span style="color: #6a737d; font-style: italic; font-size: 0.9em;">// TTT params
-    only (9s: $T_k{=}5000$; 30s: $T_k{=}1000$; 36s: $T_k{=}1000$)</span>
+    only (9s: $T_k{=}5000$; 30s: $T_k{=}1000$; 63s: $T_k{=}1000$)</span>
 <b>end if</b>
 
 $\mathcal{D}_k \leftarrow \{(\boldsymbol{z}^v_i, \boldsymbol{z}^c_i) \in \mathcal{D} \mid
@@ -528,6 +526,15 @@ $\boldsymbol{\theta}^{(k+1)} \leftarrow \boldsymbol{\theta}^{(k)}$ <span
                     </tr>
                 </thead>
                 <tbody class="center">
+                    <tr>
+                        <td style="text-align: left;">CogVideoX-5B</td>
+                        <td>229.57</td>
+                        <td>69.17</td>
+                        <td>2850.96/td>
+                        <td>0.983</td>
+                        <td><b>0.204</b></td>
+                        <td>30.08</td>
+                    </tr>
                     <tr>
                         <td style="text-align: left;">Ophora</td>
                         <td>167.10</td>
